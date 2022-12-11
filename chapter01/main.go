@@ -4,8 +4,8 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
-	//_ "github.com/sijms/go-ora/v2"
-	_ "github.com/godror/godror"
+	_ "github.com/sijms/go-ora/v2"
+	// _ "github.com/godror/godror"
 	"os"
 	"time"
 )
@@ -155,9 +155,9 @@ func main() {
 
 	fmt.Println("Connection string: ", connStr)
 	// use sijms/go-ora/v2
-	//conn, err := sql.Open("oracle", server)
+	conn, err := sql.Open("oracle", server)
 	// use godror/godror
-	conn, err := sql.Open("godror", server)
+	// conn, err := sql.Open("godror", server)
 	if err != nil {
 		fmt.Println("Can't open the driver: ", err)
 		return
