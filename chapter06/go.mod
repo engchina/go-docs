@@ -15,8 +15,8 @@ require (
 	github.com/thoas/go-funk v0.7.0 // indirect
 )
 
-replace (
-	github.com/engchina/go-ora/v2 => D:/apps/gopath/src/github.com/engchina/go-ora/v2
-	github.com/engchina/oracle => D:/apps/gopath/src/github.com/engchina/oracle
-	gorm.io/gorm => D:/workspace/gorm
-)
+//replace (
+//	github.com/engchina/go-ora/v2 => D:/apps/gopath/src/github.com/engchina/go-ora/v2
+//	github.com/engchina/oracle => D:/apps/gopath/src/github.com/engchina/oracle
+//	gorm.io/gorm => D:/workspace/gorm
+//)

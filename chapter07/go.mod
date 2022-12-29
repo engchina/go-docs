@@ -2,11 +2,6 @@ module chapter06
 
 go 1.19
 
-<<<<<<< HEAD
-require github.com/olekukonko/tablewriter v0.0.5
-
-require github.com/mattn/go-runewidth v0.0.9 // indirect
-=======
 require (
 	github.com/engchina/oracle v1.2.7
 	gorm.io/gorm v1.24.2
@@ -20,9 +15,8 @@ require (
 	github.com/thoas/go-funk v0.7.0 // indirect
 )
 
-replace (
-	github.com/engchina/go-ora/v2 => D:/apps/gopath/src/github.com/engchina/go-ora/v2
-	github.com/engchina/oracle => D:/apps/gopath/src/github.com/engchina/oracle
-	gorm.io/gorm => D:/workspace/gorm
-)
->>>>>>> c3a1f4c2595f1faba5d7c90a1ab094c9bf9b5208
+//replace (
+//	github.com/engchina/go-ora/v2 => D:/apps/gopath/src/github.com/engchina/go-ora/v2
+//	github.com/engchina/oracle => D:/apps/gopath/src/github.com/engchina/oracle
+//	gorm.io/gorm => D:/workspace/gorm
+//)
