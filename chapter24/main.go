@@ -10,10 +10,12 @@ func main() {
 	}
 }
 
+// revive:disable:exported
 func PrintHello() {
 	fmt.Println("Hello, Go")
 }
 
+// PrintNumber writes a number using the fmt.Println function
 func PrintNumber(number int) {
 	fmt.Println(number)
 }
