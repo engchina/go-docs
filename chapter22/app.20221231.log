@@ -1,0 +1,2 @@
+{"client_ip":"::1","latency_time":1055300,"level":"info","msg":"","req_method":"GET","req_uri":"/index","status_code":200,"time":"2022-12-31 09:34:45"}
+{"client_ip":"::1","latency_time":49559400,"level":"info","msg":"","req_method":"GET","req_uri":"/static/favicon.ico","status_code":200,"time":"2022-12-31 09:34:45"}

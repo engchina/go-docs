@@ -1,0 +1,2 @@
+time="2022-12-31T09:34:45+08:00" level=info client_ip="::1" latency_time=1.0553ms req_method=GET req_uri=/index status_code=200
+time="2022-12-31T09:34:45+08:00" level=info client_ip="::1" latency_time=49.5594ms req_method=GET req_uri=/static/favicon.ico status_code=200

@@ -8,8 +8,19 @@ import (
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
+	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
+	"github.com/rifflock/lfshook"
+	"github.com/sirupsen/logrus"
 	"log"
 	"net/http"
+	"os"
+	"path"
+	"time"
+)
+
+var (
+	logFilePath = "./"
+	logFileName = "app"
 )
 
 var adminUsers = gin.H{
@@ -150,6 +161,81 @@ func insert(db *sql.DB, course *model.Course) {
 	log.Println(affected)
 }
 
+func loggerMiddleware() gin.HandlerFunc {
+	fullFileName := path.Join(logFilePath, logFileName)
+	src, err := os.OpenFile(fullFileName, os.O_CREATE|os.O_APPEND|os.O_WRONLY, os.ModeAppend)
+	if err != nil {
+		fmt.Println("err", err)
+	}
+	logger := logrus.New()
+	logger.SetLevel(logrus.DebugLevel)
+	logger.Out = src
+
+	logWriter, err := rotatelogs.New(
+		fullFileName+".%Y%m%d.log",
+		rotatelogs.WithLinkName(fullFileName),
+		rotatelogs.WithMaxAge(7*24*time.Hour),
+		rotatelogs.WithRotationTime(24*time.Hour),
+	)
+
+	writeMap := lfshook.WriterMap{
+		logrus.PanicLevel: logWriter,
+		logrus.FatalLevel: logWriter,
+		logrus.ErrorLevel: logWriter,
+		logrus.WarnLevel:  logWriter,
+		logrus.InfoLevel:  logWriter,
+		logrus.DebugLevel: logWriter,
+		logrus.TraceLevel: logWriter,
+	}
+
+	logger.AddHook(lfshook.NewHook(writeMap, &logrus.JSONFormatter{TimestampFormat: "2006-01-02 15:04:05"}))
+
+	return func(c *gin.Context) {
+		startTime := time.Now()
+		c.Next()
+		endTime := time.Now()
+		latencyTime := endTime.Sub(startTime)
+		reqMethod := c.Request.Method
+		reqUrl := c.Request.RequestURI
+		statusCode := c.Writer.Status()
+		clientIp := c.ClientIP()
+
+		logger.WithFields(logrus.Fields{
+			"status_code":  statusCode,
+			"latency_time": latencyTime,
+			"client_ip":    clientIp,
+			"req_method":   reqMethod,
+			"req_uri":      reqUrl,
+		}).Info()
+	}
+}
+
+var dbs *sql.DB
+
+func initDB(dsn string) (err error) {
+	dbs, err = sql.Open("mysql", dsn)
+	if err != nil {
+		return err
+	}
+
+	//defer func(dbs *sql.DB) {
+	//	err := dbs.Close()
+	//	if err != nil {
+	//		return
+	//	}
+	//}(dbs)
+
+	err = dbs.Ping()
+	if err != nil {
+		return err
+	}
+
+	dbs.SetMaxOpenConns(10)
+	dbs.SetMaxIdleConns(5)
+
+	return nil
+}
+
 func main() {
 
 	dsn := "root:oracle@tcp(192.168.31.45:3306)/oracle"
@@ -163,7 +249,13 @@ func main() {
 	}
 	insert(dbs, course)
 
+	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
+	//example-1
+	//f, _ := os.Create("app.log")
+	//gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
+	//example-2
+	r.Use(loggerMiddleware())
 	routerGroup := r.Group("/admin", gin.BasicAuth(gin.Accounts{
 		"admin1": "123456",
 		"admin2": "123456",
@@ -211,30 +303,4 @@ func main() {
 	if err != nil {
 		return
 	}
-}
-
-var dbs *sql.DB
-
-func initDB(dsn string) (err error) {
-	dbs, err = sql.Open("mysql", dsn)
-	if err != nil {
-		return err
-	}
-
-	//defer func(dbs *sql.DB) {
-	//	err := dbs.Close()
-	//	if err != nil {
-	//		return
-	//	}
-	//}(dbs)
-
-	err = dbs.Ping()
-	if err != nil {
-		return err
-	}
-
-	dbs.SetMaxOpenConns(10)
-	dbs.SetMaxIdleConns(5)
-
-	return nil
 }
